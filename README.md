@@ -1,7 +1,46 @@
-# Terminal Dev Environment — User Manual
+# DevKitTool
 
-> 适用系统：Fedora 43 ｜ 用户：root ｜ 实时配置位置：`/root/.config/nvim`
-> 本文档 + 配置备份位置：本仓库（`DevKitPack/`）
+Terminal development environment (Neovim + LSP + CLI tools) and **devkit** — a single-file tool that migrates the whole environment to an air-gapped machine, fully offline.
+
+一套完整的终端开发环境（Neovim），以及把它**离线**迁移到无外网机器的单文件工具 `devkit`。
+
+> 本仓库包含两部分：
+>
+> 1. **开发环境配置**：Neovim 0.11.6 + 30 个插件 + 13 个 LSP / 格式化服务器（Mason 管理）+ ripgrep / fd / fzf / lazygit / yazi 等终端工具；Neovim 配置见 `config/nvim/`。
+> 2. **`devkit` 离线迁移工具**：把整套环境（编辑器、插件、LSP、工具链）打包成**单个可执行文件**，拷到完全无外网的机器上一条命令还原，全程零网络。
+
+## Repository Layout
+
+| 路径 | 内容 |
+|---|---|
+| `config/nvim/` | Neovim 配置（`init.lua` + `lua/` + `lazy-lock.json` 版本锁） |
+| `devkit/` | 离线迁移工具源码（Go，纯标准库） |
+| `install.sh` | 联网机器一键安装（装齐工具 + 恢复配置 + 自动下载插件与 LSP） |
+| `DEVKIT.md` | `devkit` 离线迁移用法（实测数据、设计说明） |
+| `KEYMAPS.md` | Neovim 快捷键速查 |
+| `README.md` | 本文档（环境使用手册） |
+
+## Quick Start
+
+**在联网机器上直接使用（Fedora）：**
+
+```bash
+bash install.sh          # 装工具 + 恢复配置 + 自动下载插件和 LSP
+```
+
+**迁移到无外网的机器（离线 Ubuntu）：**
+
+```bash
+cd devkit
+go build -o devkit .     # 需要 Go 工具链
+./devkit pack            # 联网打包：产物是单个 devkit 文件（内含完整环境）
+
+# 把 devkit 拷到目标机后：
+./devkit apply           # 零网络还原（默认装到当前用户 ~/.local，无需 sudo）
+./devkit verify          # 冒烟验证：工具版本 + 10 种文件类型的 LSP 附加
+```
+
+详细说明见 [DEVKIT.md](./DEVKIT.md)。
 
 ---
 
@@ -179,7 +218,7 @@ A：旧配置里 Neovim 会在保存时自动给文件末尾补换行，现已�
 ## 7. Config Backup & Restore
 
 - **实时配置**（Neovim 实际读取的）：`/root/.config/nvim/`
-- **备份副本**（本目录）：`DevKitPack/config/nvim/`
+- **备份副本**（本仓库）：`config/nvim/`
 
 改完配置如果想让备份同步，执行：
 ```bash
@@ -223,3 +262,9 @@ cp -a ~/.config/nvim/. config/nvim/    # 在仓库根目录执行
 如果要把这套环境整套搬到**没有外网**的 Ubuntu 机器上，用同目录 `devkit/` 里的迁移工具：
 Fedora 上 `./devkit pack` 生成单个可执行文件 → 拷过去 → Ubuntu 上 `./devkit apply && ./devkit verify`。
 详见 [DEVKIT.md](./DEVKIT.md)。
+
+---
+
+## License
+
+GPL-3.0，见 [LICENSE](./LICENSE)。
