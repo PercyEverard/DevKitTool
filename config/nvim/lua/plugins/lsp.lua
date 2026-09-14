@@ -68,8 +68,10 @@ return {
 			})
 
 			-- ===== 诊断显示样式 =====
+			-- 报错在光标行下方整行展开（同一行多条也能看全），其他行只有 ✘/▲ 标记
 			vim.diagnostic.config({
-				virtual_text = { spacing = 2, prefix = "●" },
+				virtual_text = false,
+				virtual_lines = { current_line = true },
 				severity_sort = true,
 				update_in_insert = false,
 				float = { border = "rounded", source = true },
